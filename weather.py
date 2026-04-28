@@ -1,7 +1,7 @@
 import os
 import json
 import requests
-
+import jinja2
 
 def get_weather(settings):
     return requests.get(settings["baseurl"] + "?q=" + settings["city"] + "&appid=" + settings["appid"] + "&units=metric").json()
@@ -57,8 +57,16 @@ if not settings:
     settings = input_setting()
 
 weather = get_weather(settings)
-print("Погода в городе " + weather["name"])
-print("Ощущается как  " + str(weather["main"]["feels_like"]))
-print("Описание  " + str(weather["weather"][0]["description"]))
 
+envir = jinja2.Environment()
+templateCity = envir.from_string("Погода в городе {{ city }}")
+templateFeels = envir.from_string("Ощущается как {{ feels }}")
+templateDescription = envir.from_string("Описание: {{ desc }}")
 
+city = templateCity.render(city = weather["name"])
+feels = templateFeels.render(feels = weather["main"]["feels_like"])
+desc = templateDescription.render(desc = weather["weather"][0]["description"])
+
+print(city)
+print(feels)
+print(desc)
