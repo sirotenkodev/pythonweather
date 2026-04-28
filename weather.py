@@ -1,9 +1,11 @@
 import os
 import json
 import requests
+import climage
+from io import BytesIO
 
 def get_weather(settings):
-    return requests.get(settings["baseurl"] + "?q=" + settings["city"] + "&appid=" + settings["appid"]).json()
+    return requests.get(settings["baseurl"] + "?q=" + settings["city"] + "&appid=" + settings["appid"] + "&units=metric").json()
 
 def load_setting():
     settings_file = "newsettings.json"
@@ -37,8 +39,10 @@ settings = load_setting()
 if not settings:
     settings = input_setting()
 
-print(get_weather(settings))
-
-
+weather = get_weather(settings)
+print(weather)
+print("Погода в городе " + weather["name"])
+print("Ощущается как  " + str(weather["main"]["feels_like"]))
+print("Описание  " + str(weather["weather"][0]["description"]))
 
 
