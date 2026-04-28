@@ -1,8 +1,7 @@
 import os
 import json
 import requests
-import climage
-from io import BytesIO
+
 
 def get_weather(settings):
     return requests.get(settings["baseurl"] + "?q=" + settings["city"] + "&appid=" + settings["appid"] + "&units=metric").json()
