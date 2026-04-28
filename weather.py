@@ -8,21 +8,39 @@ def get_weather(settings):
 
 def load_setting():
     settings_file = "newsettings.json"
-    user = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Documents')
-    settings = {}
-    if os.access(user + "\\" + settings_file, os.R_OK):
-        with open(user + "\\" + settings_file, 'r') as json_file:
-            parser_data = json.load(json_file)
-            settings["baseurl"] = parser_data['baseurl']
-            settings["city"] = parser_data['city']
-            settings["appid"] = parser_data['appid']
-    return settings
+    os_name = os.name
+    if os_name== 'nt':
+        user = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Documents')
+        settings = {}
+        if os.access(user + "\\" + settings_file, os.R_OK):
+            with open(user + "\\" + settings_file, 'r') as json_file:
+                parser_data = json.load(json_file)
+                settings["baseurl"] = parser_data['baseurl']
+                settings["city"] = parser_data['city']
+                settings["appid"] = parser_data['appid']
+        return settings
+    elif os_name == 'posix':
+        home = os.path.expanduser('~')
+        settings = {}
+        if os.access(home + '/' + settings_file, os.R_OK):
+            with open(home + '/' + settings_file, 'r') as json_file:
+                parser_data = json.load(json_file)
+                settings['baseurl'] = parser_data['baseurl']
+                settings['city'] = parser_data['city']
+                settings['appid'] = parser_data['appid']
+        return settings
 
 def save_setting(settings):
     settings_file = "newsettings.json"
-    user = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Documents')
-    with open(user + "\\" + settings_file, 'a') as json_file:
-        json.dump(settings, json_file)
+    os_name = os.name
+    if os_name == "nt":
+        user = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Documents')
+        with open(user + "\\" + settings_file, 'a') as json_file:
+            json.dump(settings, json_file)
+    elif os_name == 'posix':
+        home = os.path.expanduser('~')
+        with open(home + "/" + settings_file, 'a') as json_file:
+            json.dump(settings, json_file)
 
 def input_setting():
     settings = {}
@@ -39,7 +57,6 @@ if not settings:
     settings = input_setting()
 
 weather = get_weather(settings)
-print(weather)
 print("Погода в городе " + weather["name"])
 print("Ощущается как  " + str(weather["main"]["feels_like"]))
 print("Описание  " + str(weather["weather"][0]["description"]))
